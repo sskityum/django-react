@@ -7,13 +7,8 @@ export const App = () => {
   return (
     <div className="container">
       <div className="row">
-        <div className="col-5">
-          <p className="h3" style={{ textAlign: "right" }}>
-            django + react
-          </p>
-        </div>
-        <div className="col-7">
-          <p className="h3">"to-do-шка"</p>
+        <div className="col-12" style={{ textAlign: "center" }}>
+          <h1 className="display-2">django+react-todo to heroku</h1>
         </div>
       </div>
       <hr />

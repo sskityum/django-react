@@ -3,34 +3,33 @@ import React, { useContext } from "react";
 import { HerokuContext } from "../context/herokuContext";
 
 export const AddNote = () => {
-  const { note, addNote, inputChange, inputReset } = useContext(HerokuContext);
+  const { note, changeNote, addNote, clearingNote } = useContext(HerokuContext);
 
-  const handleChange = (e) => {
-    inputChange(e.target.value);
+  const handlerChange = (e) => {
+    changeNote(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handlerSubmit = (e) => {
     e.preventDefault();
     if (note.title.trim()) {
       addNote();
     }
-    inputReset();
+    clearingNote();
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handlerSubmit}>
       <div className="form-group">
         <input
           type="text"
-          name="title"
           className="form-control"
           placeholder="add here ..."
-          onChange={handleChange}
           value={note.title}
+          onChange={handlerChange}
         />
       </div>
-      <button type="submit" className="btn btn-primary">
-        Add
+      <button type="submit" className="btn btn-secondary">
+        Submit
       </button>
     </form>
   );

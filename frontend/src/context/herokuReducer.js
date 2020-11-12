@@ -1,16 +1,16 @@
 import {
-  ADD_NOTE,
   FETCH_NOTES,
-  INP_CHANGE,
+  SHOW_LODER,
   REMOVE_NOTE,
-  INP_RES,
-  SHOW_LOADER,
-  START_EDIT_NOTE,
-  SAVE_EDITABLE_NOTE,
+  ADD_NOTE,
+  CHANGE_NOTE,
+  CLEARING_NOTE,
+  START_EDT_NOTE,
+  SAVE_EDT_NOTE,
 } from "./types";
 
 const handlers = {
-  [SHOW_LOADER]: (state) => ({ ...state, loading: true }),
+  [SHOW_LODER]: (state) => ({ ...state, loading: true }),
   [FETCH_NOTES]: (state, { payload }) => ({
     ...state,
     notes: payload,
@@ -26,11 +26,11 @@ const handlers = {
     notes: [...state.notes, { ...payload }],
     loading: false,
   }),
-  [INP_CHANGE]: (state, { payload }) => ({
+  [CHANGE_NOTE]: (state, { payload }) => ({
     ...state,
     note: { ...state.note, title: payload },
   }),
-  [INP_RES]: (state) => ({
+  [CLEARING_NOTE]: (state) => ({
     ...state,
     note: {
       id: null,
@@ -38,7 +38,7 @@ const handlers = {
       completed: false,
     },
   }),
-  [START_EDIT_NOTE]: (state, { payload }) => ({
+  [START_EDT_NOTE]: (state, { payload }) => ({
     ...state,
     note: {
       id: payload.id,
@@ -47,7 +47,7 @@ const handlers = {
     },
     editing: true,
   }),
-  [SAVE_EDITABLE_NOTE]: (state, { payload }) => ({
+  [SAVE_EDT_NOTE]: (state, { payload }) => ({
     ...state,
     notes: state.notes.map((note) =>
       note.id === payload.id ? (note = payload) : note

@@ -4,16 +4,16 @@ import { HerokuContext } from "./herokuContext";
 import { herokuReducer } from "./herokuReducer";
 import {
   ADD_NOTE,
+  CHANGE_NOTE,
+  CLEARING_NOTE,
   FETCH_NOTES,
-  INP_CHANGE,
   REMOVE_NOTE,
-  INP_RES,
-  SHOW_LOADER,
-  START_EDIT_NOTE,
-  SAVE_EDITABLE_NOTE,
+  SAVE_EDT_NOTE,
+  SHOW_LODER,
+  START_EDT_NOTE,
 } from "./types";
 
-const url = process.env.REACT_APP_NET_DB;
+const url = process.env.REACT_APP_HEROKU_URL;
 
 export const HerokuState = ({ children }) => {
   const getCookie = (name) => {
@@ -33,29 +33,26 @@ export const HerokuState = ({ children }) => {
   };
 
   const initState = {
-    notes: [],
     note: {
       id: null,
       title: "",
       completed: false,
     },
+    notes: [],
     loading: false,
     editing: false,
   };
 
   const [state, dispatch] = useReducer(herokuReducer, initState);
 
-  const showLoader = () => dispatch({ type: SHOW_LOADER });
+  const showLoader = () => dispatch({ type: SHOW_LODER });
 
   const fetchNotes = async () => {
     showLoader();
     try {
       const response = await fetch(`${url}/api/task-list/`);
       if (response.ok) {
-        const data = await response.json();
-        const payload = data.map((note) => {
-          return note;
-        });
+        const payload = await response.json();
         dispatch({
           type: FETCH_NOTES,
           payload,
@@ -68,9 +65,7 @@ export const HerokuState = ({ children }) => {
 
   const removeNote = async (id) => {
     showLoader();
-
     const csrftoken = getCookie("csrftoken");
-
     await fetch(`${url}/api/task-delete/${id}/`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json", "X-CSRFToken": csrftoken },
@@ -83,17 +78,15 @@ export const HerokuState = ({ children }) => {
 
   const addNote = async () => {
     showLoader();
-
     const csrftoken = getCookie("csrftoken");
-
-    let urlAddEdit = `${url}/api/task-create/`;
+    let urlEdtAdd = `${url}/api/task-create/`;
 
     if (state.editing) {
-      urlAddEdit = `${url}/api/task-update/${state.note.id}/`;
+      urlEdtAdd = `${url}/api/task-update/${state.note.id}/`;
     }
 
     try {
-      const response = await fetch(urlAddEdit, {
+      const response = await fetch(urlEdtAdd, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -102,18 +95,11 @@ export const HerokuState = ({ children }) => {
         body: JSON.stringify(state.note),
       });
       if (response.ok) {
-        const data = await response.json();
-        const payload = data;
+        const payload = await response.json();
         if (state.editing) {
-          dispatch({
-            type: SAVE_EDITABLE_NOTE,
-            payload,
-          });
+          dispatch({ type: SAVE_EDT_NOTE, payload });
         } else {
-          dispatch({
-            type: ADD_NOTE,
-            payload,
-          });
+          dispatch({ type: ADD_NOTE, payload });
         }
       }
     } catch (err) {
@@ -121,54 +107,46 @@ export const HerokuState = ({ children }) => {
     }
   };
 
-  const inputChange = (value) => {
-    dispatch({
-      type: INP_CHANGE,
-      payload: value,
-    });
-  };
+  const changeNote = (title) => dispatch({ type: CHANGE_NOTE, payload: title });
 
-  const inputReset = () => {
-    dispatch({ type: INP_RES });
-  };
+  const clearingNote = () => dispatch({ type: CLEARING_NOTE });
 
-  const editNote = (note) => {
-    dispatch({ type: START_EDIT_NOTE, payload: note });
-  };
+  const startEdtNote = (note) =>
+    dispatch({ type: START_EDT_NOTE, payload: note });
 
   const setStrikeUnstrike = async (note) => {
-    showLoader();
-
     const csrftoken = getCookie("csrftoken");
-
     note.completed = !note.completed;
-    const response = await fetch(`${url}/api/task-update/${note.id}/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-CSRFToken": csrftoken },
-      body: JSON.stringify({ completed: note.completed, title: note.title }),
-    });
-    if (response.ok) {
-      const data = await response.json();
-      const payload = data;
-      dispatch({
-        type: SAVE_EDITABLE_NOTE,
-        payload,
+    try {
+      const response = await fetch(`${url}/api/task-update/${note.id}/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrftoken,
+        },
+        body: JSON.stringify({ completed: note.completed, title: note.title }),
       });
+      if (response.ok) {
+        const payload = await response.json();
+        dispatch({ type: SAVE_EDT_NOTE, payload });
+      }
+    } catch (err) {
+      throw new Error(err.message);
     }
   };
 
   return (
     <HerokuContext.Provider
       value={{
+        loading: state.loading,
         note: state.note,
         notes: state.notes,
-        loading: state.loading,
         fetchNotes,
         removeNote,
         addNote,
-        inputChange,
-        inputReset,
-        editNote,
+        changeNote,
+        clearingNote,
+        startEdtNote,
         setStrikeUnstrike,
       }}
     >

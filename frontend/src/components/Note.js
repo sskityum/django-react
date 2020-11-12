@@ -1,16 +1,18 @@
 import React, { useContext } from "react";
+
 import { HerokuContext } from "../context/herokuContext";
 
 export const Note = ({ note, index }) => {
-  const { removeNote, editNote, setStrikeUnstrike } = useContext(HerokuContext);
+  const { removeNote, startEdtNote, setStrikeUnstrike } = useContext(
+    HerokuContext
+  );
 
   return (
     <li
       className="list-group-item"
       style={{ display: "flex", justifyContent: "space-between" }}
-      key={index}
     >
-      <ul className="list-group list-group-horizontal" style={{ width: "90%" }}>
+      <ul className="list-group list-group-horizontal" style={{ width: "85%" }}>
         <li
           className="list-group-item"
           style={{ width: "4rem", textAlign: "center" }}
@@ -19,7 +21,7 @@ export const Note = ({ note, index }) => {
         </li>
         <li
           className="list-group-item"
-          style={{ width: "100%", cursor: "pointer" }}
+          style={{ width: "100%", cursor: 'pointer' }}
           onClick={() => setStrikeUnstrike(note)}
         >
           {note.completed ? (
@@ -34,18 +36,17 @@ export const Note = ({ note, index }) => {
       <div className="btn-group" role="group" aria-label="Basic example">
         <button
           type="button"
-          className="btn btn-primary"
-          onClick={() => editNote(note)}
-          style={{ marginRight: "3px" }}
+          className="btn btn-secondary"
+          onClick={() => startEdtNote(note)}
         >
           Edit
         </button>
         <button
           type="button"
-          className="btn btn-danger"
+          className="btn btn-secondary"
           onClick={() => removeNote(note.id)}
         >
-          Del
+          Remove
         </button>
       </div>
     </li>
